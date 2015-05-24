@@ -1,8 +1,5 @@
 # FBTools
 
-Prerequisite:
-<b>You must have access to Facebook Zero via your carrier. Check if you can visit 0.facebook.com</b>
-
 FBTools allows you to access Facebook via command-line.
 It provides some features that are not available via Facebook Graph API.
 
