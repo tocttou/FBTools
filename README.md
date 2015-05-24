@@ -1,7 +1,7 @@
 # FBTools
 
 FBTools allows you to access Facebook via command-line.
-It provides some features that are not availible via Facebook Graph API.
+It provides some features that are not available via Facebook Graph API.
 
 
 First version implements 'Unfriend-checker'.
