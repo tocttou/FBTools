@@ -4,6 +4,7 @@
 import selenium.webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import pickle
 import re
 import os
@@ -19,13 +20,11 @@ def cookieInjector(driver):
       for cookie in cookies:
          driver.add_cookie(cookie)
 
-def login():
+def login(driver):
    print("Provide your credentials for login.")
    print("Credentials are not stored and required only once...")
    email = input("Email/Username/Phone : ")
    password = input("Password : ")
-
-   driver=selenium.webdriver.PhantomJS()
    
    print("Attempting Login...")
    
@@ -43,7 +42,7 @@ def login():
          print("xxxxxxx")
          print("Wait...")
          print("xxxxxxx")
-         notInList()
+         notInList(driver)
    except NoSuchElementException:
          dummy += 1
 
@@ -72,13 +71,15 @@ def friendComparator(newList):
 
    print("Finding who unfriended you! (or you unfriended them)")
    kickingFriends = []
+
+   print(len(newList))
    
    if os.path.isfile("friendList.pkl") == True:
       oldFile = pickle.load(open("friendList.pkl", "rb"))
 
-      for line in oldFile:
-         if line.rstrip() not in newList:
-            kickingFriends.append(line)
+   for line in oldFile:
+      if line.rstrip() not in newList:
+         kickingFriends.append(line)
    else:
       print("Failed to find the Old Friend List")
       print("Writing new Friend List")
@@ -87,8 +88,8 @@ def friendComparator(newList):
 
    return kickingFriends
 
-def notInList():
-   comparison = friendComparator(friendList())
+def notInList(driver):
+   comparison = friendComparator(friendList(driver))
    if comparison == []:
       print("")
       print("xxxxxxx")
@@ -100,36 +101,36 @@ def notInList():
       for kickingFriend in comparison:
          print(kickingFriend)
 
-def friendList():
+def friendList(driver):
 
    holder = []
-   driver=selenium.webdriver.PhantomJS()
    
-   driver.get("http://0.facebook.com")
+   driver.get("http://m.facebook.com")
 
    cookieInjector(driver)
    
+   n = 0
    dummy = 0
+   
+   print("Fetching Friend List...")
 
-   print("Fetching Friend List",end='')
-
-   for n in range(0,500):
+   while n <= 500:
       try:
-         driver.get("https://0.facebook.com/friends/center/friends/?ppk={}".format(n))
-         elements = driver.find_elements_by_class_name('bu')
-         print(".",end='')
-         for element in elements:
-            if re.search("Report a Problem",element.text):
-               dummy += 1
-            if dummy == 0:
-               holder.append(element.text)
+         driver.get("https://m.facebook.com/friends/center/friends/?ppk={}".format(n))
+         a = 1
+         while a<= 10:
+            element = driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[{}]/table/tbody/tr/td[2]/a'.format(a))
+            print (element.text)
+            holder.append(element.text)
+            driver.save_screenshot('out.png')
+            a += 1
+         n += 1
+      except NoSuchElementException:
          try:
-            if driver.find_element_by_id('u_0_0').is_displayed() == False:
-               break
+            elem = driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[1]/table/tbody/tr/td[2]/a')
+            n += 1
          except:
             break
-      except:
-         print("Unable to get the Friend List.")
 
    print("")
    
@@ -138,13 +139,21 @@ def friendList():
  
 def main():
 
+   dcap = dict(DesiredCapabilities.PHANTOMJS)
+   dcap["phantomjs.page.settings.userAgent"] = (
+       "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0"
+   )
+   
+   serviceArgs = ['--load-images=no',]
+   
+   driver=selenium.webdriver.PhantomJS(desired_capabilities=dcap,service_args=serviceArgs)
+
    if loginChecker() == True:
       print("Attempting Login...")
-      notInList()
+      notInList(driver)
    else:
-      login()
+      login(driver)
       
    freezer = input("xxxxxxx\n") #screen freeze
 
 if __name__ == "__main__":main()
-
