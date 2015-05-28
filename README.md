@@ -8,28 +8,36 @@
 
 ##Current Features
 
-'''1.) Check if someone unfriended you.
-2.) Browse through your News Feed.
-3.) Like any item in the feed.
-4.) Comment on any item in the feed.'''
+'''
+* Check if someone unfriended you.
+* Browse through your News Feed.
+* Like any item in the feed.
+* Comment on any item in the feed.
+'''
 
 ###Upcoming Features
 
-'''1.) Chat with Online Friends.
-2.) User Timeline.'''
+'''
+* Chat with Online Friends.
+* User Timeline.
+'''
 
 ##Requirements
 
-'''1.) Python3
-2.) PhantomJS 2.0.0
-3.) Python packages required:
-	selenium (pip install selenium)
-	pyfiglet (pip install selenium)'''
+'''
+* Python3
+* PhantomJS 2.0.0
+* Python packages required:
+  * selenium (pip install selenium)
+  * pyfiglet (pip install selenium)
+'''
 
 ##Issues
 
-'''Currently it is unable to display languages with Unicode characters (like Hindi) on the command prompt.
-Output on IDLE is fine though.'''
+'''
+Currently it is unable to display languages with Unicode characters (like Hindi) on the command prompt.
+Output on IDLE is fine though.
+'''
 
 ##Screenshot
 
