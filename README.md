@@ -3,7 +3,9 @@
 >FBTools allows you to access Facebook via command-line.
 
 ##Highlight
-`It does not use Facebook Graph API.`
+It does not use Facebook Graph API.
+So a lot of features like fetching full friend list are now available.
+And its blazing fast.
 
 
 ##Current Features
