@@ -228,6 +228,8 @@ class FBTools:
          print("Liked.")
       except:
          print("Unable to like.")
+      self.onPage = 0
+      self.home(self.onPage,0)
 
    def comment(self,index):
       try:
@@ -237,6 +239,8 @@ class FBTools:
          print("Commented.")
       except:
          print("Unable to comment.")
+      self.onPage = 0
+      self.home(self.onPage,0)
 
    def isEnglish(self,s):
       try:
