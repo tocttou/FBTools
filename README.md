@@ -43,5 +43,3 @@ Output on IDLE is fine though.
 ##License
 
 MIT © [Ashish Chaudhary](https://github.com/yankee101)
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/yankee101/fbtools/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
