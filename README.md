@@ -26,7 +26,7 @@ And its blazing fast.
 * PhantomJS 2.0.0
 * Python packages required:
   * selenium (pip install selenium)
-  * pyfiglet (pip install selenium)
+  * pyfiglet (pip install pyfiglet)
 
 ##Issues
 
