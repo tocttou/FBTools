@@ -20,7 +20,7 @@ class FBTools:
       dcap["phantomjs.page.settings.userAgent"] = (
           "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0"    #The xpaths used in the code are with reference to the layout of m.facebook.com on Firefox Windows.
       )    
-      serviceArgs = ['--load-images=no',]                                      
+      serviceArgs = ['--load-images=no',]
       self.driver=selenium.webdriver.PhantomJS(desired_capabilities=dcap,service_args=serviceArgs)
 
 
@@ -274,6 +274,55 @@ class FBTools:
             print(kickingFriend)
          print("xxxxxxx")
 
+   ##Notifications Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+   def notify(self):
+      try:
+         self.driver.get("https://m.facebook.com/notifications")
+         temp = self.dateCurator()
+         dates = temp[0]
+         xpaths = temp[1]
+         print("\nxxxxxxx\nNotifications\nxxxxxxx\n")
+         for index,date in enumerate(dates):
+            print(date + ":")
+            notifications = self.getNotifications(xpaths[index])
+            for notification in notifications:
+               print("- - - - -")
+               print(notification)
+            print("x_x_x_x_x_x_x_x_x_x")
+      except NoSuchElementException:
+         print("xxxxxxx\nCannot Print Notifications\nxxxxxxx")
+
+   def dateCurator(self):
+      dates = []
+      xpaths = []
+      n = 1
+      while n < 10:
+         try:            
+            xpath = '//*[@id="notifications_list"]/div[{}]/h5'.format(n)
+            date = self.driver.find_element_by_xpath(xpath).text
+            dates.append(date)
+            xpaths.append(xpath)
+            n += 1
+         except NoSuchElementException:
+            n += 1
+            break
+      return [dates,xpaths]
+
+   def getNotifications(self,basepath):
+      notifications = []
+      n = 1
+      while n < 20:
+         try:            
+            xpath = re.sub("/h5",'',basepath)+"/div[{}]/table/tbody/tr/td[2]/a/div".format(n)
+            notification = self.driver.find_element_by_xpath(xpath).text
+            notifications.append(notification)
+            n += 1
+         except NoSuchElementException:
+            n += 1
+            break
+      return notifications             
+
    
    ##Flow Manager Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _       
       
@@ -316,6 +365,8 @@ class FBTools:
          operand = self.homeActionsParser(command)
          if operand != -1:
             self.comment(operand)
+      elif command == "notif":
+         self.notify()
       else:
          print("Invalid command. Use 'help' to get a list of commands.")
          

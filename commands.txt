@@ -8,4 +8,5 @@ The following commands are available in the current version:
 -> home next :- Goes to the next page in your news feed. Goes to home if home not already open.
 -> like [index] :- Likes the item in news feed on given index. Index is printed over the item.
 -> comment [index] :- Comments on the item in news feed on given index. Index is printed over the item.
+-> notif :- Displays notifications.
 xxxxx

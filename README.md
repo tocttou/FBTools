@@ -14,6 +14,7 @@ And its blazing fast.
 * Browse through your News Feed.
 * Like any item in the feed.
 * Comment on any item in the feed.
+* Check your notifications.
 
 ###Upcoming Features
 
