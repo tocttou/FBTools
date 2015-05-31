@@ -209,11 +209,11 @@ class FBTools:
 
 
    def friendWriter(self,friendList):
-      if os.path.isfile(self.name.split()[0]+".pkl") == True:
-         file = open(self.name.split()[0]+".pkl",'wb')
+      if os.path.isfile("friendList.pkl") == True:
+         file = open("friendList.pkl",'wb')
       else:
          print("Generating Friend List for the first time.")
-         file = open(self.name.split()[0]+".pkl",'wb')      
+         file = open("friendList.pkl",'wb')      
       pickle.dump(friendList,file)
 
    def friendList(self):
@@ -248,12 +248,12 @@ class FBTools:
       print("Finding who unfriended you! (or you unfriended them)")
       kickingFriends = []
      
-      if os.path.isfile(self.name.strip()+".pkl") == True and newList != []:
-         oldFile = pickle.load(open(self.name.strip()+".pkl", "rb"))
+      if os.path.isfile("friendList.pkl") == True and newList != []:
+         oldFile = pickle.load(open("friendList.pkl", "rb"))
          for line in oldFile:
             if line.rstrip() not in newList:
                kickingFriends.append(line)
-      elif os.path.isfile(self.name.strip()+".pkl") == False:
+      elif os.path.isfile("friendList.pkl") == False:
          print("Failed to find the Old Friend List")
          print("Writing new Friend List")
       else:
