@@ -13,14 +13,24 @@ import os
 
 class FBTools:
 
+   ##Initialise Driver_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
    def __init__(self):
       dcap = dict(DesiredCapabilities.PHANTOMJS)
       dcap["phantomjs.page.settings.userAgent"] = (
-          "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0"
+          "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0"    #The xpaths used in the code are with reference to the layout of m.facebook.com on Firefox Windows.
       )    
-      serviceArgs = ['--load-images=no',]      
+      serviceArgs = ['--load-images=no',]                                      
       self.driver=selenium.webdriver.PhantomJS(desired_capabilities=dcap,service_args=serviceArgs)
-      
+
+
+   ##Login Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+   def loginChecker(self):
+      if os.path.isfile("cookies.pkl") == True:
+         return True
+      else:
+         return False
 
    def login(self):
       print("Provide your credentials for login.")
@@ -37,11 +47,10 @@ class FBTools:
       dummy = 0
 
       try:
-         if self.driver.find_element_by_xpath('//*[@id="header"]/form/table/tbody/tr/td[2]/input').is_displayed() == True:
+         if self.driver.find_element_by_xpath('//*[@id="viewport"]/div[3]/div/table/tbody/tr/td[2]/a[3]').is_displayed() == True:
             print("Successfully logged in. Dumping Cookies...")
             self.cookieDumper()
             print("Dumped Cookies")
-
       except NoSuchElementException:
             dummy += 1
 
@@ -49,18 +58,13 @@ class FBTools:
          print("xxxxxxx")
          print("Unable to login, try again later.")
 
+         
 
-   def loginChecker(self):
-      if os.path.isfile("cookies.pkl") == True:
-         return True
-      else:
-         return False
-
-   def cookieDumper(self):
+   def cookieDumper(self):                                                             #Dumps cookies on first login.
       pickle.dump(self.driver.get_cookies() , open("cookies.pkl","wb"))
      
 
-   def cookieInjector(self):
+   def cookieInjector(self):                                                           #Injects cookies on subsequent logins.
       if os.path.isfile("cookies.pkl") == True:
          cookies = pickle.load(open("cookies.pkl", "rb"))
          self.driver.get("http://m.facebook.com")
@@ -68,114 +72,48 @@ class FBTools:
             self.driver.add_cookie(cookie)
          self.driver.get("http://m.facebook.com/settings")
 
-   def friendWriter(self,friendList):
-      if os.path.isfile("friendList.pkl") == True:
-         file = open("friendList.pkl",'wb')
-      else:
-         print("Generating Friend List for the first time.")
-         file = open("friendList.pkl",'wb')      
-      pickle.dump(friendList,file)
-
-
-   def friendComparator(self,newList):
-      print("Finding who unfriended you! (or you unfriended them)")
-      kickingFriends = []
-     
-      if os.path.isfile("friendList.pkl") == True:
-         oldFile = pickle.load(open("friendList.pkl", "rb"))
-         for line in oldFile:
-            if line.rstrip() not in newList:
-               kickingFriends.append(line)
-      else:
-         print("Failed to find the Old Friend List")
-         print("Writing new Friend List")
-
-      self.friendWriter(newList)
-
-      return kickingFriends
-
-   def friendList(self):
-      holder = []    
-      n = 0
-      dummy = 0
-      
-      print("Fetching Friend List",end='')
-
-      while n <= 500:
-         print(".",end='')
-         sys.stdout.flush()
-         try:
-            self.driver.get("https://m.facebook.com/friends/center/friends/?ppk={}".format(n))
-            a = 1
-            while a<= 10:
-               element = self.driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[{}]/table/tbody/tr/td[2]/a'.format(a))
-               holder.append(element.text)
-               a += 1
-            n += 1
-         except NoSuchElementException:
-            try:
-               elem = self.driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[1]/table/tbody/tr/td[2]/a')
-               n += 1
-            except:
-               break
-
-      print("")
-      
-      return holder
-
-   def notInList(self):
-      comparison = self.friendComparator(self.friendList())
-      if comparison == []:
-         print("xxxxxxx\nNo new Un-friends\nxxxxxxx")
-      else:
-         print("These prople are no more in your friend list: ")
-         print("CAUTION : If they haven't unfriended you, they may have deactivated their account temporarily.")
-         print("\nxxxxxxx")
-         for kickingFriend in comparison:
-            print(kickingFriend)
-         print("xxxxxxx")
+   ##Home Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
    def home(self,pageNumber,click):
-      if pageNumber == 0 and click == 0:
-         self.driver.get("http://m.facebook.com")
-      if click == 1:
-         try:
-            if pageNumber == 1:
-               self.driver.find_element_by_xpath('//*[@id="m_newsfeed_stream"]/div[3]/a').click()
-            elif pageNumber > 1:
-               self.driver.find_element_by_xpath('//*[@id="root"]/div/div[3]/a').click()
-         except NoSuchElementException:
-            print("Cannot access the next page.")
-            print(self.onPage)
-            self.onPage = 0
-         
-      holder = []
-      like_link_holder = []
-      comment_link_holder = []
-      n = 0
-      try:
-         while n < 10:
-            path = '//*[@id="u_0_{}"]'.format(n)
-            post = self.driver.find_element_by_xpath(path)
-            if post.text != "":
-               comment_package = self.commentExtractor(path)
-               if comment_package[0] != False:
-                  like_link_holder.append(self.likeExtractor(path))
-                  comment_link_holder.append(comment_package[1])
-                  holder.append(post.text.strip())
-            n += 1
-      except NoSuchElementException:
-            n += 1
+         if pageNumber == 0 and click == 0:
+            self.driver.get("http://m.facebook.com")
+         if click == 1:
+            try:
+               if pageNumber == 1:
+                  self.driver.find_element_by_xpath('//*[@id="m_newsfeed_stream"]/div[3]/a').click()
+               elif pageNumber > 1:
+                  self.driver.find_element_by_xpath('//*[@id="root"]/div/div[3]/a').click()
+            except NoSuchElementException:
+               print("Cannot access the next page.")
+               self.onPage = 0
             
-      self.returnedList = self.homeParser(holder,like_link_holder,comment_link_holder)
-      for index,post in enumerate(self.returnedList[0]):
-         print("---{}---\n{}".format(index,self.render(post)))
-      print("xxxxxxx")
-      self.onPage += 1
+         holder = []
+         like_link_holder = []
+         comment_link_holder = []
+         n = 0
+         try:
+            while n < 10:
+               path = '//*[@id="u_0_{}"]'.format(n)
+               post = self.driver.find_element_by_xpath(path)
+               if post.text != "":
+                  comment_package = self.commentLinkExtractor(path)
+                  if comment_package[0] != False:
+                     like_link_holder.append(self.likeLinkExtractor(path))
+                     comment_link_holder.append(comment_package[1])
+                     holder.append(post.text.strip())
+               n += 1
+         except NoSuchElementException:
+               n += 1
+               
+         self.returnedList = self.homeParser(holder,like_link_holder,comment_link_holder)
+         for index,post in enumerate(self.returnedList[0]):
+            print("---{}---\n{}".format(index,self.render(post)))
+         print("xxxxxxx")
+         self.onPage += 1
 
    def homeParser(self,posts,like_links,comment_links):
       for post in posts:
-         dummy = -1
+         dummy = -1                                                                 #Some posts get repeated while fetching, this block of code deletes them.
          for y in posts:
             dummy += 1
             if post != y:
@@ -185,7 +123,7 @@ class FBTools:
                   del comment_links[dummy]
                   break
       b = -1
-      for post in posts:
+      for post in posts:                                                            #This block of code is supposed to only allow english chars. Needs rechecking.
          b += 1
          if self.isEnglish(post) == False:
             del posts[b]
@@ -194,8 +132,16 @@ class FBTools:
             
       return [posts,like_links,comment_links]
 
+   def isEnglish(self,s):
+      try:
+        s.encode('ascii')
+      except UnicodeEncodeError:
+        return False
+      else:
+        return True
+
    def render(self,post):
-      post = re.sub('. Add Friend . Full Story . More','',post)
+      post = re.sub('. Add Friend . Full Story . More','',post)                        #Replaces irrelevent text with ''
       post = re.sub('Add Friend\n','',post)
       post = re.sub('. Full Story . More','',post)
       post = re.sub('. Like Page','',post)
@@ -204,7 +150,7 @@ class FBTools:
 
       return post
 
-   def likeExtractor(self,path):
+   def likeLinkExtractor(self,path):
       try:
          like_link = self.driver.find_element_by_xpath('{}/div[2]/div[2]/div[2]/span[1]/a[2]'.format(path))
          return like_link
@@ -215,7 +161,7 @@ class FBTools:
          except NoSuchElementException:
             return False
 
-   def commentExtractor(self,path):
+   def commentLinkExtractor(self,path):
       try:
          comment_link = self.driver.find_element_by_xpath('{}/div[2]/div[2]/a[1]'.format(path))
          return [True,comment_link]
@@ -242,15 +188,7 @@ class FBTools:
       self.onPage = 0
       self.home(self.onPage,0)
 
-   def isEnglish(self,s):
-      try:
-        s.encode('ascii')
-      except UnicodeEncodeError:
-        return False
-      else:
-        return True
-
-   def homeActionsParser(self,action):
+   def homeActionsParser(self,action):                                                 #Parses the news feed post index from the command.
       operand = -1
       for s in action.split():
          if s.isdigit():
@@ -266,14 +204,86 @@ class FBTools:
       except AttributeError:
          print("Nothing here! So can't perform that action.")
          return -1
-         
+
+   ##Friend List Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+
+   def friendWriter(self,friendList):
+      if os.path.isfile(self.name.split()[0]+".pkl") == True:
+         file = open(self.name.split()[0]+".pkl",'wb')
+      else:
+         print("Generating Friend List for the first time.")
+         file = open(self.name.split()[0]+".pkl",'wb')      
+      pickle.dump(friendList,file)
+
+   def friendList(self):
+      holder = []    
+      n = 0
+      dummy = 0
+      
+      print("Fetching Friend List",end='')
+
+      while n <= 500:
+         print(".",end='')
+         sys.stdout.flush()
+         try:
+            self.driver.get("https://m.facebook.com/friends/center/friends/?ppk={}".format(n))
+            a = 1
+            while a<= 10:
+               element = self.driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[{}]/table/tbody/tr/td[2]/a'.format(a))
+               holder.append(element.text)
+               a += 1
+            n += 1
+         except NoSuchElementException:
+            try:
+               elem = self.driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[1]/table/tbody/tr/td[2]/a')
+               n += 1
+            except:
+               break
+
+      print("")    
+      return holder
+
+   def friendComparator(self,newList):
+      print("Finding who unfriended you! (or you unfriended them)")
+      kickingFriends = []
+     
+      if os.path.isfile(self.name.strip()+".pkl") == True and newList != []:
+         oldFile = pickle.load(open(self.name.strip()+".pkl", "rb"))
+         for line in oldFile:
+            if line.rstrip() not in newList:
+               kickingFriends.append(line)
+      elif os.path.isfile(self.name.strip()+".pkl") == False:
+         print("Failed to find the Old Friend List")
+         print("Writing new Friend List")
+      else:
+         print("Function Failed")
+
+      self.friendWriter(newList)
+      return kickingFriends
+
+   def notInList(self):
+      comparison = self.friendComparator(self.friendList())
+      if comparison == []:
+         print("xxxxxxx\nNo new Un-friends\nxxxxxxx")
+      else:
+         print("These prople are no more in your friend list: ")
+         print("CAUTION : If they haven't unfriended you, they may have deactivated their account temporarily.")
+         print("\nxxxxxxx")
+         for kickingFriend in comparison:
+            print(kickingFriend)
+         print("xxxxxxx")
+
+   
+   ##Flow Manager Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _       
       
    def greeting(self):
       try:
-         if self.driver.find_element_by_xpath('//*[@id="viewport"]/div[3]/div/table/tbody/tr/td[2]/a[3]').is_displayed() == True:
-            name = self.driver.find_element_by_xpath('//*[@id="viewport"]/div[3]/div/table/tbody/tr/td[2]/a[3]')
-            f = Figlet(font='slant')
-            print(f.renderText(re.search('\((.*?)\)',name.text).group(1)))
+         data = self.driver.find_element_by_xpath('//*[@id="viewport"]/div[3]/div/table/tbody/tr/td[2]/a[3]')
+         f = Figlet(font='slant')
+         self.name = re.search('\((.*?)\)',data.text).group(1) #Extracts username from 'Logout (username)' fetched from the page.
+         print(f.renderText(self.name))
+         self.name = self.name.lower()
       except NoSuchElementException:
             pass
 
@@ -329,7 +339,10 @@ def main():
    else:
       tool.login()
 
-   tool.greeting()
-   tool.commandInput()
+   if tool.loginChecker() == True:
+      tool.greeting()
+      tool.commandInput()
+   else:
+      sys.exit("Can't proceed.")
 
 if __name__ == "__main__":main()
