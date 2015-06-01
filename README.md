@@ -11,6 +11,7 @@ And its blazing fast.
 ##Current Features
 
 * Check if someone unfriended you.
+* Like all posts on a friend's timeline.
 * Browse through your News Feed.
 * Like any item in the feed.
 * Comment on any item in the feed.

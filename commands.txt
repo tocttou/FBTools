@@ -6,7 +6,8 @@ The following commands are available in the current version:
 (Caution :- It may give false positive in case you have unfriended a person or the person has deactivated their FB account.)
 -> home :- Displays your news feed.
 -> home next :- Goes to the next page in your news feed. Goes to home if home not already open.
--> like [index] :- Likes the item in news feed on given index. Index is printed over the item.
--> comment [index] :- Comments on the item in news feed on given index. Index is printed over the item.
+-> like [index] :- Likes the item in news feed on given index. Index is printed over the item. Some posts do not have "Like" written under them. They cannot be liked.
+-> comment [index] :- Comments on the item in news feed on given index. Index is printed over the item. Some posts do not have "Comment" written under them. You cannot comment on them.
 -> notif :- Displays notifications.
+-> auli :- Prints your friend list and prompts for liking all the posts by a specific friend or posts the he/she was tagged in. *Hidden posts cannot be liked.*
 xxxxx
