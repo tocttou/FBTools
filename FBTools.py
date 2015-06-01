@@ -490,10 +490,11 @@ class FBTools:
       if holder == []:
          n = 1
          while n < 20:
-               try:
-                  holder.append(self.driver.find_element_by_xpath('//*[@id="structured_composer_async_container"]/div[3]/div[{}]/a'.format(n)))
-               except NoSuchElementException:
-                  break
+            try:
+               holder.append(self.driver.find_element_by_xpath('//*[@id="structured_composer_async_container"]/div[3]/div[{}]/a'.format(n)))
+               n += 1
+            except NoSuchElementException:
+               break
       return holder
 
    def friendLikeLink(self):
