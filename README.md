@@ -21,7 +21,6 @@ And its blazing fast.
 
 * Chat with Online Friends.
 * User Timeline.
-* Autoliker.
 
 ##Requirements
 
