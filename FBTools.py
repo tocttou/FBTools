@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from pyfiglet import Figlet
 import selenium.webdriver
+import requests
 import pickle
 import sys
 import re
@@ -22,7 +23,6 @@ class FBTools:
       )    
       serviceArgs = ['--load-images=no',]
       self.driver=selenium.webdriver.PhantomJS(desired_capabilities=dcap,service_args=serviceArgs)
-
 
    ##Login Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
@@ -147,6 +147,11 @@ class FBTools:
       post = re.sub('. Like Page','',post)
       post = re.sub('Like Page . More','',post)
       post = re.sub('. Share','',post)
+      post = re.sub('More','',post)
+      post = re.sub('. More','',post)
+      post = re.sub('Share','',post)
+      post = re.sub('Join Page','',post)
+      post = re.sub('Like Page','',post)
 
       return post
 
@@ -217,7 +222,7 @@ class FBTools:
       pickle.dump(friendList,file)
 
    def friendList(self):
-      holder = []    
+      holder = []
       n = 0
       dummy = 0
       
@@ -231,7 +236,7 @@ class FBTools:
             a = 1
             while a<= 10:
                element = self.driver.find_element_by_xpath('//*[@id="friends_center_main"]/div[2]/div[{}]/table/tbody/tr/td[2]/a'.format(a))
-               holder.append(element.text)
+               holder.append(element.text + "," + element.get_attribute("href").split('/')[6].split('&')[0].split('?uid=')[1])
                a += 1
             n += 1
          except NoSuchElementException:
@@ -251,8 +256,8 @@ class FBTools:
       if os.path.isfile("friendList.pkl") == True and newList != []:
          oldFile = pickle.load(open("friendList.pkl", "rb"))
          for line in oldFile:
-            if line.rstrip() not in newList:
-               kickingFriends.append(line)
+            if line not in newList:
+               kickingFriends.append(line.split(',')[0])
       elif os.path.isfile("friendList.pkl") == False:
          print("Failed to find the Old Friend List")
          print("Writing new Friend List")
@@ -321,8 +326,209 @@ class FBTools:
          except NoSuchElementException:
             n += 1
             break
-      return notifications             
+      return notifications
 
+   ##Friend's Timeline Liker Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+   def friendLiker(self):
+      print("THIS WILL LIKE EACH AND EVERY POST OF A SPECIFIED FRIEND.")
+      print("ENTER 'p' TO PROCEED OR ANYTHING ELSE TO QUIT.")
+      choice = input("")
+      if choice == 'p' or choice == 'P':
+         if os.path.isfile("friendList.pkl") == False:
+            print("Friend List not found.")
+            print("Use 'unfr' first to get the initial friend list.")
+            return False
+         else:
+            print("\nxxxxxxx\nIndex : Friend (alphabetical order):\nxxxxxxx")
+            file = pickle.load(open("friendList.pkl",'rb'))
+            for index,line in enumerate(sorted(file)):
+               print(str(index)+" : "+line.split(',')[0])
+            print("\nxxxxxxx\nEnter Index\nxxxxxxx")
+            index = input("Index: ")
+            self.loadProfile(int(index))       
+      else:
+         return False
+
+   def loadProfile(self,number):
+      uid = 0
+      for index,line in enumerate(sorted(pickle.load(open("friendList.pkl",'rb')))):
+         if index == number:
+            uid = int(line.split(',')[1])
+            print("Liking all posts on {}'s Timeline...".format(line.split(',')[0].split()[0]))
+            break
+      self.driver.get("http://m.facebook.com/{}".format(uid))
+      try:       
+         temp = self.elementYear()
+         years = []
+         names = []
+         numberOfLikes = 0
+         alreadyLiked = 0
+         totalLiked = 0
+         totalAlreadyLiked = 0
+         for x in temp:
+            years.append(x.get_attribute("href"))
+            names.append(x.text)
+         print("*one '.' == 1 Like Administered*")
+         for index,year in enumerate(years):
+            self.driver.get(year)
+            if index != 0:
+               stories = self.allStories()
+            else:
+               stories = "dummyValue"
+            print("\nxxxxxxx {} xxxxxxx".format(names[index]))
+            if stories != None:
+               if stories != "dummy":
+                  self.driver.get(stories)
+                  showmorelink = self.showMore()
+                  while showmorelink != "dummy":
+                     likelinks = self.friendLikeLink()
+                     alreadyLiked += likelinks[0]
+                     totalAlreadyLiked += likelinks[0]
+                     likedJustNow = self.likeAllLinks(likelinks[1])
+                     numberOfLikes += likedJustNow
+                     totalLiked += likedJustNow
+                     self.driver.get(showmorelink)
+                     showmorelink = self.showMore()
+                  if showmorelink == "dummy":
+                     likelinks = self.friendLikeLink()
+                     alreadyLiked += likelinks[0]
+                     totalAlreadyLiked += likelinks[0]
+                     likedJustNow = self.likeAllLinks(likelinks[1])
+                     numberOfLikes += likedJustNow
+                     totalLiked += likedJustNow
+                  print("\nPosts liked now: {}".format(numberOfLikes))
+                  print("Posts already liked: {}".format(alreadyLiked))
+                  numberOfLikes = 0
+                  alreadyLiked = 0
+               else:
+                  print("Failed")
+            if stories == None:
+               likelinks = self.friendLikeLink()
+               alreadyLiked += likelinks[0]
+               totalAlreadyLiked += likelinks[0]
+               likedJustNow = self.likeAllLinks(likelinks[1])
+               numberOfLikes += likedJustNow
+               totalLiked += likedJustNow               
+               print("\nPosts liked now: {}".format(numberOfLikes))
+               print("Posts already liked: {}".format(alreadyLiked))
+               numberOfLikes = 0
+               alreadyLiked = 0
+         print("\nxxxxxxx REPORT xxxxxxx\n")
+         print("Total Likes Administered Now: {}".format(totalLiked))
+         print("Number Of Already Liked Posts: {}".format(totalAlreadyLiked))
+         print("Total Likes on Friend's Timeline: {}".format(totalLiked + totalAlreadyLiked))       
+      except NoSuchElementException:
+         print("Can't Proceed")
+
+   def allStories(self):
+      link = ""      
+      try:
+         showall = self.driver.find_elements_by_xpath("//*[contains(text(), 'Show all stories')]")
+         for show in showall:
+            if self.checkValidLink(show,"stories") == True:
+               link = show.get_attribute("href")
+               return link
+            else:
+               return "dummy"
+      except NoSuchElementException:
+         return "dummy"
+
+   def showMore(self):
+      try:
+         showmore = self.driver.find_element_by_xpath("//*[contains(text(), 'Show more')]")
+         if self.checkValidLink(showmore,"showmore") == True:
+            return showmore.get_attribute("href")
+         else:
+            return "dummy"
+      except NoSuchElementException:
+         return "dummy"
+                    
+
+   def checkValidLink(self,temp,user):
+      if user == "stories":
+         try:
+            link = temp.get_attribute("href")      
+            if link.split('/')[2] == "m.facebook.com":
+               return True
+            else:
+               return False
+         except:
+            return False
+      elif user == "likes":
+         try:
+            link = temp.get_attribute("href")
+            if link.split('/')[2] == "m.facebook.com":
+               if "like.php" in link:
+                  return True
+               else:
+                  return False
+         except:
+            return False
+      elif user == "showmore":
+         try:
+            link = temp.get_attribute("href")
+            if link.split('/')[2] == "m.facebook.com":
+               return True
+            else:
+               return False
+         except:
+            return False           
+      else:
+         return False
+
+      
+   def elementYear(self):
+      n = 1
+      holder = []
+      while n < 20:
+         try:
+            holder.append(self.driver.find_element_by_xpath('//*[@id="structured_composer_async_container"]/div[4]/div[{}]/a'.format(n)))
+            n += 1
+         except NoSuchElementException:
+            break
+      if holder == []:
+         n = 1
+         while n < 20:
+               try:
+                  holder.append(self.driver.find_element_by_xpath('//*[@id="structured_composer_async_container"]/div[3]/div[{}]/a'.format(n)))
+               except NoSuchElementException:
+                  break
+      return holder
+
+   def friendLikeLink(self):
+      holder = []
+      try:
+         likeLinks = self.driver.find_elements_by_xpath("//*[contains(text(), 'Like')]")
+         unlikeLinks = self.driver.find_elements_by_xpath("//*[contains(text(), 'Unlike')]")
+         for like in likeLinks:
+            if self.checkValidLink(like,"likes") == True:
+               holder.append(like.get_attribute("href"))
+         alreadyLiked = len(unlikeLinks)
+         return [alreadyLiked,holder]
+      except NoSuchElementException:
+         return []
+
+   def likeAllLinks(self,links):
+      file = pickle.load(open("cookies.pkl",'rb'))
+      numberOfLikes = 0
+      cookies = {}
+      for x in file:
+         if 'datr' in str(x):
+           cookies["datr"] = x["value"]
+         if 'xs' in str(x):
+           cookies["xs"] = x["value"]
+         if 'c_user' in str(x):
+           cookies["c_user"] = x["value"]
+      for link in links:
+         r = requests.get(link,cookies = cookies)
+         if r.status_code == 200:
+            print(".",end = '')
+            numberOfLikes += 1
+         else:
+            print("Failed")
+      return numberOfLikes
+            
    
    ##Flow Manager Functions_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _       
       
@@ -367,6 +573,8 @@ class FBTools:
             self.comment(operand)
       elif command == "notif":
          self.notify()
+      elif command == "auli":
+         self.friendLiker()
       else:
          print("Invalid command. Use 'help' to get a list of commands.")
          
