@@ -36,9 +36,13 @@ Currently it is unable to display languages with Unicode characters (like Hindi)
 Output on IDLE is fine though.
 
 
-##Screenshot
+##Screenshots
 
+###Mainscreen
 ![FBTools](http://i.imgur.com/GsvnBk2.png)
+
+###Autoliker
+![FBTools](http://i.imgur.com/jvZDN8u.png)
 
 ##Tested with Python 3.4.3 on Windows.
 

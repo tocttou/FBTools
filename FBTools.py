@@ -525,6 +525,7 @@ class FBTools:
          r = requests.get(link,cookies = cookies)
          if r.status_code == 200:
             print(".",end = '')
+            sys.stdout.flush()
             numberOfLikes += 1
          else:
             print("Failed")
