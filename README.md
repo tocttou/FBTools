@@ -30,11 +30,9 @@ And its blazing fast.
   * selenium (pip install selenium)
   * pyfiglet (pip install pyfiglet)
 
-##Issues
+##Issue
 
-Currently it is unable to display languages with Unicode characters (like Hindi) on the command prompt.
-Output on IDLE is fine though.
-
+Posts not in English are skipped in the news feed due to decoding issues when writing the feed in command prompt (windows). Output on Python3 IDLE works fine though.
 
 ##Screenshots
 

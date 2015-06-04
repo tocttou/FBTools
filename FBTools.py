@@ -91,8 +91,8 @@ class FBTools:
          like_link_holder = []
          comment_link_holder = []
          n = 0
-         try:
-            while n < 10:
+         while n < 10:
+            try:
                path = '//*[@id="u_0_{}"]'.format(n)
                post = self.driver.find_element_by_xpath(path)
                if post.text != "":
@@ -102,12 +102,30 @@ class FBTools:
                      comment_link_holder.append(comment_package[1])
                      holder.append(post.text.strip())
                n += 1
-         except NoSuchElementException:
+            except NoSuchElementException:
+               n += 1
+
+         n = 0
+         while n < 10:
+            try:
+               path = '//*[@id="u_0_{}"]'.format(chr(n + 97))
+               post = self.driver.find_element_by_xpath(path)
+               if post.text != "":
+                  comment_package = self.commentLinkExtractor(path)
+                  if comment_package[0] != False:
+                     like_link_holder.append(self.likeLinkExtractor(path))
+                     comment_link_holder.append(comment_package[1])
+                     holder.append(post.text.strip())
+               n += 1
+            except NoSuchElementException:
                n += 1
                
          self.returnedList = self.homeParser(holder,like_link_holder,comment_link_holder)
          for index,post in enumerate(self.returnedList[0]):
-            print("---{}---\n{}".format(index,self.render(post)))
+            try:
+               print("---{}---\n{}".format(index,self.render(post)))
+            except (UnicodeDecodeError,UnicodeEncodeError):
+               pass
          print("xxxxxxx")
          self.onPage += 1
 
@@ -135,10 +153,9 @@ class FBTools:
    def isEnglish(self,s):
       try:
         s.encode('ascii')
+        return True
       except UnicodeEncodeError:
         return False
-      else:
-        return True
 
    def render(self,post):
       post = re.sub('. Add Friend . Full Story . More','',post)                        #Replaces irrelevent text with ''
@@ -152,6 +169,7 @@ class FBTools:
       post = re.sub('Share','',post)
       post = re.sub('Join Page','',post)
       post = re.sub('Like Page','',post)
+      post = re.sub('Join Event','',post)
 
       return post
 
@@ -346,7 +364,10 @@ class FBTools:
                print(str(index)+" : "+line.split(',')[0])
             print("\nxxxxxxx\nEnter Index\nxxxxxxx")
             index = input("Index: ")
-            self.loadProfile(int(index))       
+            if index.isdigit():
+               self.loadProfile(int(index))
+            else:
+               print("Invalid Index")
       else:
          return False
 
