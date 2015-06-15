@@ -1,4 +1,4 @@
-#FBTools
+﻿#FBTools
 
 >FBTools allows you to access Facebook via command-line.
 
@@ -29,6 +29,7 @@ And its blazing fast.
 * Python packages required:
   * selenium (pip install selenium)
   * pyfiglet (pip install pyfiglet)
+  * requests (pip install requests)
 
 ##Issue
 
