@@ -557,7 +557,7 @@ class FBTools:
       
    def greeting(self):
       try:
-         data = self.driver.find_element_by_xpath('//*[@id="viewport"]/div[3]/div/table/tbody/tr/td[2]/a[3]')
+         data = self.driver.find_element_by_xpath("//*[contains(text(), 'Logout')]")
          f = Figlet(font='slant')
          self.name = re.search('\((.*?)\)',data.text).group(1) #Extracts username from 'Logout (username)' fetched from the page.
          print(f.renderText(self.name))
