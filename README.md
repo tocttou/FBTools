@@ -31,9 +31,9 @@ And its blazing fast.
     * Copy the contents of `phantomjs-2.0.0-windows` folder to `C:\PhantomJS`
     * Add `C:\PhantomJS\bin\` to your PATH environment variable.
 * Python packages required:
-  * selenium (pip install selenium)
-  * pyfiglet (pip install pyfiglet)
-  * requests (pip install requests)
+  * selenium (`pip install selenium`)
+  * pyfiglet (`pip install pyfiglet`)
+  * requests (`pip install requests`)
 
 ##Issue
 
