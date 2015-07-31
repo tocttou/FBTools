@@ -25,7 +25,11 @@ And its blazing fast.
 ##Requirements
 
 * Python3
-* PhantomJS 2.0.0
+* [PhantomJS 2.0.0](https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.0.0-windows.zip)
+  * Steps for setting up PhantomJS on Windows:
+    * Make a folder `C:\PhantomJS`
+    * Copy the contents of `phantomjs-2.0.0-windows` folder to `C:\PhantomJS`
+    * Add `C:\PhantomJS\bin\` to your PATH environment variable.
 * Python packages required:
   * selenium (pip install selenium)
   * pyfiglet (pip install pyfiglet)
