@@ -48,7 +48,7 @@ Posts not in English are skipped in the news feed due to decoding issues when wr
 ###Autoliker
 ![FBTools](http://i.imgur.com/jvZDN8u.png)
 
-##Tested with Python 3.4.3 on Windows.
+Tested with Python 3.4.3 on Windows.
 
 ##License
 
