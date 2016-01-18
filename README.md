@@ -52,4 +52,4 @@ Tested with Python 3.4.3 on Windows.
 
 ##License
 
-MIT © [Ashish Chaudhary](https://github.com/yankee101)
+MIT © [Ashish Chaudhary](http://tocttou.mit-license.org/)
