@@ -2,10 +2,12 @@
 
 >FBTools allows you to access Facebook via command-line.
 
+This project was made for learning purpose and is not maintained currently. It should work fine nonetheless. In case of any bug, please file an issue and I'll rectify it.
+
 ##Highlight
 It does not use Facebook Graph API.
 So a lot of features like fetching full friend list are now available.
-And its blazing fast.
+And its blazing fast because it uses the mobile version.
 
 
 ##Current Features
@@ -19,8 +21,7 @@ And its blazing fast.
 
 ###Upcoming Features
 
-* Chat with Online Friends.
-* User Timeline.
+[None]
 
 ##Requirements
 
